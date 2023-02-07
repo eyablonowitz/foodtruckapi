@@ -72,14 +72,13 @@ definition produced by FastAPI](./openapi.json) for more details on the request 
 ```
 
 ## Problem Statement
-This project was created in response to a coding challenge. Here is the original prompt: 
+This project was created in response to a coding challenge with the following requirements:
 
-> Given the data about Mobile Food Facilities in San Francisco (https://data.sfgov.org/Economy-and-Community/Mobile-Food-Facility-Permit/rqzj-sfat/data),
-build an API to perform the following operations on the data set:
-> - Search by name of applicant. Include optional filter on "Status" field.
-> - Search by street name. The user should be able to type just part of the address. Example: Searching for "SAN" should return food trucks on "SANSOME ST"
-> - Given a latitude and longitude, the API should return the 5 nearest food trucks. By default, this should only return food trucks with status "APPROVED", but the user should be able to override this and search for all statuses.
-> - You can use any external services to help with this (e.g., Google Maps API).
+With the [San Francisco Mobile Food Facility dataset](https://data.sfgov.org/Economy-and-Community/Mobile-Food-Facility-Permit/rqzj-sfat/data)
+(effectively a database of food trucks), create a web API to enable searching by applicant name or street name,
+optionally filtering by whether the truck's permit has been approved. The API must also support querying the closest
+5 food trucks to a given latitude/longitude pair.
+
   
 ### Further assumptions:
 In developing a solution I made a number of assumptions over-and-above the prompt above:
