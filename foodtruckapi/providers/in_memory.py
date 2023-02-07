@@ -7,11 +7,11 @@ from time import time
 class InMemoryProvider:
     """
     A generic FoodTruck data provider for fetching lists of FoodTruck from HTTP sources into memory for search.
-    Sub-class and override the fetch_data and _parse_truck methods as needed to create usable providers.
+    Sub-class and override the _parse_to_food_trucks method as needed to create usable providers
     """
 
     def __init__(self, trucks: list[FoodTruck] = None, data_ttl_secs: int = 3600, disable_fetch: bool = False):
-        self.trucks = trucks if trucks else []
+        self._trucks = trucks if trucks else []
         self.data_ttl_secs = data_ttl_secs
         self.last_fetch_time = None
         self.disable_fetch = disable_fetch
@@ -19,13 +19,9 @@ class InMemoryProvider:
     def fetch_data(self, url: str = None):
         if self._do_not_fetch:
             return
-
         r = requests.get(url)
         r.raise_for_status()
-        self.trucks = []
-        for item in r.json():
-            food_truck = self._parse_truck(item)
-            self.trucks.append(food_truck)
+        self._trucks = self._parse_to_food_trucks(r.json())
         self.last_fetch_time = time()
 
     @property
@@ -38,8 +34,8 @@ class InMemoryProvider:
                 return True
 
     @staticmethod
-    def _parse_truck(t) -> FoodTruck:
-        return FoodTruck.parse_obj(t)
+    def _parse_to_food_trucks(obj) -> list[FoodTruck]:
+        return [FoodTruck.parse_obj(item) for item in obj]
 
     def search(self,
                only_approved: bool = True,
@@ -52,6 +48,7 @@ class InMemoryProvider:
         try:
             self.fetch_data()
         except Exception:
+            # TODO: More specific exception handling here and/or in in fetch_data()
             print("Unable to fetch updated data. Continuing search with possibly stale data.")
 
         def filter_f(truck: FoodTruck):
@@ -62,7 +59,7 @@ class InMemoryProvider:
             ]):
                 return False
             return True
-        filtered = list(filter(filter_f, [truck for truck in self.trucks]))
+        filtered = list(filter(filter_f, [truck for truck in self._trucks]))
 
         if latlong:
             filtered.sort(key=lambda truck: distance(latlong, truck.latlong))

@@ -10,8 +10,8 @@ def test_datasf_load(requests_mock):
     requests_mock.get("https://data.sfgov.org/resource/rqzj-sfat.json", json=json.loads(json_fake_data))
     datasf = DataSFProvider()
     datasf.fetch_data()
-    assert 4 == len(datasf.trucks)
-    assert "Ziaurehman Amini" == datasf.trucks[0].name
-    assert "5 THE EMBARCADERO" == datasf.trucks[0].address
-    assert (37.794331003246846, -122.39581105302317) == datasf.trucks[0].latlong
-    assert False is datasf.trucks[0].permit_approved
+    assert 4 == len(datasf._trucks)
+    assert "Ziaurehman Amini" == datasf._trucks[0].name
+    assert "5 THE EMBARCADERO" == datasf._trucks[0].address
+    assert (37.794331003246846, -122.39581105302317) == datasf._trucks[0].latlong
+    assert False is datasf._trucks[0].permit_approved

@@ -8,10 +8,9 @@ class DataSFProvider(InMemoryProvider):
         super().fetch_data(url=url)
 
     @staticmethod
-    def _parse_truck(t) -> FoodTruck:
-        return FoodTruck(
-            name=t["applicant"],
-            address=t["address"],
-            latlong=(float(t["latitude"]), float(t["longitude"])),
-            permit_approved=True if t["status"] == "APPROVED" else False
-        )
+    def _parse_to_food_trucks(obj) -> list[FoodTruck]:
+        return [FoodTruck(name=item["applicant"],
+                          address=item["address"],
+                          latlong=(float(item["latitude"]), float(item["longitude"])),
+                          permit_approved=item["status"] == "APPROVED"
+                          ) for item in obj]

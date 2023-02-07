@@ -42,7 +42,7 @@ json_fake_data2 = """
 
 
 def test_in_memory_provider_add(provider: InMemoryProvider):
-    assert 8 == len(provider.trucks)
+    assert 8 == len(provider._trucks)
 
 
 def test_in_memory_provider_filter(provider: InMemoryProvider):
@@ -80,11 +80,11 @@ def test_in_memory_provider_fetch(requests_mock):
     provider = InMemoryProvider()
     requests_mock.get("https://fake", json=json.loads(json_fake_data1))
     provider.fetch_data(url="https://fake")
-    assert 1 == len(provider.trucks)
-    assert "Test1" == provider.trucks[0].name
-    assert "Test Dr" == provider.trucks[0].address
-    assert (0,0) == provider.trucks[0].latlong
-    assert provider.trucks[0].permit_approved
+    assert 1 == len(provider._trucks)
+    assert "Test1" == provider._trucks[0].name
+    assert "Test Dr" == provider._trucks[0].address
+    assert (0,0) == provider._trucks[0].latlong
+    assert provider._trucks[0].permit_approved
 
 
 def test_in_memory_provider_dual_fetch_within_ttl(requests_mock):
@@ -95,7 +95,7 @@ def test_in_memory_provider_dual_fetch_within_ttl(requests_mock):
     with freeze_time("2000-01-01 00:00:05"):
         requests_mock.get("https://fake", json=json.loads(json_fake_data2))
         provider.fetch_data(url="https://fake")
-    assert 1 == len(provider.trucks)
+    assert 1 == len(provider._trucks)
 
 
 def test_in_memory_provider_dual_fetch_over_ttl(requests_mock):
@@ -106,4 +106,4 @@ def test_in_memory_provider_dual_fetch_over_ttl(requests_mock):
     with freeze_time("2000-01-01 00:0:15"):
         requests_mock.get("https://fake", json=json.loads(json_fake_data2))
         provider.fetch_data(url="https://fake")
-    assert 2 == len(provider.trucks)
+    assert 2 == len(provider._trucks)
