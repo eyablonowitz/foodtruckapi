@@ -1,0 +1,213 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "foodtruckapi",
+    "description": "Foodtruckapi provides a simple web API for searching mobile food facilities.",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/foodtruckapi/{provider}/search": {
+      "get": {
+        "summary": "Foodtruckapi Search",
+        "description": "Search for food trucks and other facilities. With no query parameters, return full dataset.",
+        "operationId": "foodtruckapi_search_foodtruckapi__provider__search_get",
+        "parameters": [
+          {
+            "description": "Data provider to search.",
+            "required": true,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/DataProviderName"
+                }
+              ],
+              "description": "Data provider to search."
+            },
+            "name": "provider",
+            "in": "path"
+          },
+          {
+            "description": "Filter to only trucks with an approved permit.",
+            "required": false,
+            "schema": {
+              "title": "Only Approved",
+              "type": "boolean",
+              "description": "Filter to only trucks with an approved permit.",
+              "default": true
+            },
+            "name": "only_approved",
+            "in": "query"
+          },
+          {
+            "description": "Sort by closest to latitude,longitude.",
+            "required": false,
+            "schema": {
+              "title": "Latlong",
+              "type": "string",
+              "description": "Sort by closest to latitude,longitude."
+            },
+            "name": "latlong",
+            "in": "query"
+          },
+          {
+            "description": "Limit number of results returned.",
+            "required": false,
+            "schema": {
+              "title": "Limit",
+              "type": "integer",
+              "description": "Limit number of results returned."
+            },
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "description": "Filter to trucks names containing name.",
+            "required": false,
+            "schema": {
+              "title": "Name",
+              "type": "string",
+              "description": "Filter to trucks names containing name.",
+              "default": ""
+            },
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "description": "Filter to trucks addresses containing this string.",
+            "required": false,
+            "schema": {
+              "title": "Address",
+              "type": "string",
+              "description": "Filter to trucks addresses containing this string.",
+              "default": ""
+            },
+            "name": "address",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Foodtruckapi Search Foodtruckapi  Provider  Search Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FoodTruck"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DataProviderName": {
+        "title": "DataProviderName",
+        "enum": [
+          "datasf"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "FoodTruck": {
+        "title": "FoodTruck",
+        "required": [
+          "name",
+          "address",
+          "latlong",
+          "permit_approved"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "latlong": {
+            "title": "Latlong",
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+            "items": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "permit_approved": {
+            "title": "Permit Approved",
+            "type": "boolean"
+          }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
