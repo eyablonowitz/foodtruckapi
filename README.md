@@ -111,9 +111,8 @@ choices. And my choices here mirrored how I would start a real-world project. In
 I specifically chose not to spend time on:
 
 1. Performance optimizations
-2. Data freshness
-3. Error handling
-4. Production readiness
+2. Error handling
+3. Production readiness
    
 See *Critique* below for more discussion.
 
@@ -143,28 +142,25 @@ dependent on another external service.
 Unit tests are built around PyTest with requests to the upsteam datasource mocked enabling offline testing of most code
 paths.
 
-#### Load full dataset into memory at start-time as a non-prod simplification
-I assumed data would be changing very infrequently. Therefore, the API loads its data at start time from the upstream
-sources. After startup,  calls to foodtruckapi are served entirely from memory. This made for a simpler implementation
-than a more dynamic approach and means that responses have very low latency, and we don't need to worry about rate
-limiting from upstream sources. Foodtruckapi will also continue to be fully-functional if the upstream datasource is
-unavailable.
-
-But the obvious trade-off in this choice is that the API may end-up eventually serving stale data. Further, if my
-assumption is wrong and the dataset(s) grew very large, loading the entire dataset into memory could become impractical.
-All-in-all, this would likely not be an optimal design decision for a production API.
+#### Cache the full dataset in memory
+I assumed data would be small and change  infrequently. Therefore,the API loads the full data on the first request and
+caches it for a TTL period - an hour by default. During the TTL, calls to foodtruckapi are served entirely from memory.
+This improves latency and reduces worries of rate limiting from upstream sources. It also makes the service more
+resilient to disruptions at the datasource.
 
 ## Critique
 
-### Missing elements
+### Next steps
 
 I was asked to time-box this effort to 5-6 hours, and that is approximately the time I spent. This necessitated omitting
-some features that would be required for a production API. These include but are not limited to:
+some features that would be required for a production API. With more time I would focus on:
 
-#### Additional input validation and error-handling
+#### Additional input validation
 A production service will want to thoroughly validate input data from both the API service and while fetching data from
-upstream. This is a hard requirement for security reasons. And better error handling while processing data and will
-improve the user and operator experience.
+upstream. This is a hard requirement for security reasons. 
+
+#### Error handling
+Adding better error handling will improve the user and operator experience and make the service more resilient.
 
 #### CI pipeline
 A continuous integration pipeline with configuration resident in the repo would increase confidence in pull requests.
@@ -172,10 +168,6 @@ A continuous integration pipeline with configuration resident in the repo would 
 #### Observability
 Adding telemetry for metrics, event-logging, and traces would give operators confidence that the API is working as
 expected. And it would help them troubleshoot when things aren't quite right.
-
-#### data dynamic refresh
-As discussed above, the start-time data loading has some real drawbacks. A simple modification to dynamically
-fetch/cache data with a TTL would be a significant improvement.
 
 #### result pagination
 While the API does allow you to limit the results returned, it does not offer a way to page through data.

@@ -24,7 +24,6 @@ async def startup_event():
     # TODO: Replace this with a mutable cache
     global datasf
     datasf = DataSFProvider()
-    datasf.fetch_data()
 
 
 @app.get("/foodtruckapi/{provider}/search")
